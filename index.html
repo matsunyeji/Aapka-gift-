@@ -7,20 +7,21 @@
 <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <main class="card" role="main" aria-labelledby="title">
-    <h1 id="title" class="title">🎉 Happy Birthday Garv! 🎉</h1>
+<main class="card">
 
-    <div id="message" class="typing" aria-live="polite"></div>
+      <h1>🎉 Happy Birthday Garv! 🎉</h1>
 
-    <div class="controls">
-      <button id="playBtn" class="btn" aria-label="Play music and reveal">💗 Play Music & Open</button>
-    </div>
+      <div id="message" class="typing"></div>
 
-    <div class="note">— with lots of kasht taken by your homie</div>
-  </main>
+      <!-- ⭐ MUSIC BUTTON GOES HERE ⭐ -->
+      <button id="musicBtn" class="music-btn">▶ Play Music</button>
 
-  <!-- audio file: upload music.mp3 to repo root -->
-  <audio id="bgMusic" src="music.mp3" preload="auto"></audio>
+      <div class="note">— with lots of kasht taken by your homie</div>
+
+</main>
+
+<!-- AUDIO -->
+<audio id="bgMusic" src="music.mp3" preload="auto"></audio>
 
   <script>
   /* ---------- CONFIG ---------- */
