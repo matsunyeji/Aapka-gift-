@@ -1,0 +1,127 @@
+/* Cute Fun Aesthetic — Pastel lilac → turquoise
+   Mobile-first, clean + responsive
+*/
+
+:root{
+  --card-w: 94%;
+  --card-max: 780px;
+  --accent: #8bd3d6;
+  --muted: #5a3c42;
+}
+
+/* basic reset */
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial}
+body{
+  background: linear-gradient(120deg, #e9d6ff 0%, #d5f1ff 45%, #e9f9f5 100%);
+  -webkit-font-smoothing:antialiased;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:28px;
+}
+
+/* card */
+.card{
+  width:var(--card-w);
+  max-width:var(--card-max);
+  background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(255,255,255,0.86));
+  border-radius:18px;
+  padding:30px 28px;
+  box-shadow: 0 18px 50px rgba(92,72,84,0.12);
+  text-align:left;
+  position:relative;
+  overflow:visible;
+}
+
+/* title */
+.title{
+  font-size:clamp(1.4rem, 3.8vw, 2rem);
+  text-align:center;
+  color:#7b3b60;
+  margin-bottom:14px;
+  font-weight:800;
+}
+
+/* message (typewriter) */
+.typing{
+  font-size:clamp(1rem, 2.4vw, 1.06rem);
+  color: var(--muted);
+  line-height:1.6;
+  min-height:160px;
+  padding: 6px 8px;
+  border-radius:10px;
+  background: linear-gradient(180deg, rgba(255,255,255,0.0), rgba(255,255,255,0.0));
+  margin-bottom:18px;
+}
+
+/* button row */
+.controls{
+  display:flex;
+  justify-content:center;
+  gap:12px;
+  margin-top:2px;
+}
+
+/* main button */
+.btn{
+  background: linear-gradient(135deg,#ffd6f0,#a6fff2);
+  border:none;
+  padding:12px 20px;
+  border-radius:14px;
+  font-size:1.02rem;
+  font-weight:700;
+  cursor:pointer;
+  color:#2b2b2b;
+  box-shadow: 0 8px 30px rgba(123,76,110,0.12);
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.btn:active{ transform: translateY(1px) scale(0.99) }
+.btn.played{ opacity:0.9; transform: scale(0.98) }
+
+/* footer note */
+.note{
+  margin-top:18px;
+  text-align:center;
+  color:#6b3d4a;
+  font-style:italic;
+}
+
+/* confetti pieces (animated via CSS) */
+.confetti{
+  position: absolute;
+  pointer-events:none;
+  border-radius:3px;
+  transform-origin:center;
+  animation: confetti-fall 2s linear forwards;
+  opacity:0.98;
+}
+@keyframes confetti-fall {
+  0% { transform: translateY(0) rotate(0) scale(1); opacity:1; }
+  70% { opacity:1; }
+  100% { transform: translateY(220px) rotate(420deg) scale(0.85); opacity:0; }
+}
+
+/* soft pointer sparkles */
+.spark{
+  position: absolute;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background: radial-gradient(circle,#ffffff 0%, rgba(255,255,255,0.2) 60%);
+  filter: blur(.6px);
+  opacity:0.95;
+  transform: translate(-50%,-50%);
+  animation: spark-rise 1.2s ease-out forwards;
+}
+@keyframes spark-rise{
+  from { transform: translate(-50%,-50%) scale(1); opacity:1; }
+  to   { transform: translate(-50%,-120%) scale(0.4); opacity:0; }
+}
+
+/* responsive tweaks */
+@media (max-width:480px){
+  .card{padding:20px}
+  .typing{min-height:140px}
+  .btn{width:100%}
+}
