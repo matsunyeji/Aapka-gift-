@@ -4,30 +4,73 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Happy Birthday — Garv</title>
-<link rel="stylesheet" href="style.css" />
+<style>
+  /* ---------- Cute Fun Aesthetic (single-file safe) ---------- */
+  :root{--muted:#5a3c42}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%;font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;-webkit-font-smoothing:antialiased}
+  body{
+    background: linear-gradient(120deg, #e9d6ff 0%, #d5f1ff 45%, #e9f9f5 100%);
+    display:flex;align-items:center;justify-content:center;padding:28px;
+  }
+  .card{
+    width:94%;max-width:780px;background:linear-gradient(180deg, rgba(255,255,255,0.94), rgba(255,255,255,0.9));
+    border-radius:18px;padding:30px 28px;box-shadow:0 18px 50px rgba(92,72,84,0.12);position:relative;overflow:visible;
+  }
+  .title{font-size:clamp(1.4rem,3.8vw,2rem);text-align:center;color:#7b3b60;margin-bottom:12px;font-weight:800}
+  .typing{font-size:clamp(1rem,2.4vw,1.05rem);color:var(--muted);line-height:1.6;min-height:160px;padding:6px 8px;border-radius:10px;margin-bottom:14px;text-align:left}
+  .controls{display:flex;justify-content:center;gap:12px;margin-top:6px}
+  .btn{background:linear-gradient(135deg,#ffd6f0,#a6fff2);border:none;padding:12px 20px;border-radius:14px;font-size:1.02rem;font-weight:700;cursor:pointer;color:#222;box-shadow:0 8px 30px rgba(123,76,110,0.12);transition:transform .18s,box-shadow .18s}
+  .btn:active{transform:translateY(1px) scale(.99)}
+  .btn.played{opacity:.9;transform:scale(.98)}
+  .note{margin-top:18px;text-align:center;color:#6b3d4a;font-style:italic}
+  /* confetti pieces */
+  .confetti{position:absolute;pointer-events:none;border-radius:3px;transform-origin:center;animation:confetti-fall 2s linear forwards;opacity:0.98}
+  @keyframes confetti-fall{0%{transform:translateY(0) rotate(0) scale(1);opacity:1}70%{opacity:1}100%{transform:translateY(220px) rotate(420deg) scale(.85);opacity:0}}
+  /* spark */
+  .spark{position:absolute;width:8px;height:8px;border-radius:50%;background:radial-gradient(circle,#ffffff 0%, rgba(255,255,255,0.2)60%);filter:blur(.6px);opacity:.95;transform:translate(-50%,-50%);animation:spark-rise 1.2s ease-out forwards}
+  @keyframes spark-rise{from{transform:translate(-50%,-50%) scale(1);opacity:1}to{transform:translate(-50%,-120%) scale(.4);opacity:0}}
+  /* debug box */
+  #debug{position:fixed;right:14px;bottom:14px;background:rgba(0,0,0,0.6);color:#fff;padding:10px 12px;border-radius:10px;font-size:12px;z-index:999;max-width:320px}
+  #debug b{display:block;font-size:13px;margin-bottom:6px}
+  /* small device tweaks */
+  @media(max-width:480px){.btn{width:100%}}
+</style>
 </head>
 <body>
 
-<main class="card">
+  <main class="card" role="main" aria-labelledby="title">
+    <h1 id="title" class="title">🎉 Happy Birthday Garv! 🎉</h1>
 
-    <h1>🎉 Happy Birthday Garv! 🎉</h1>
+    <div id="message" class="typing" aria-live="polite"></div>
 
-    <div id="message" class="typing"></div>
-
-    <!-- Correct music button -->
-    <button id="musicBtn" class="music-btn">▶ Play Music</button>
+    <div class="controls">
+      <button id="musicBtn" class="btn" aria-label="Play music and open">💗 Play Music & Open</button>
+    </div>
 
     <div class="note">— with lots of kasht taken by your homie</div>
+  </main>
 
-</main>
+  <!-- Audio file must be music.mp3 in same folder -->
+  <audio id="bgMusic" src="music.mp3" preload="auto"></audio>
 
-<!-- AUDIO -->
-<audio id="bgMusic" src="music.mp3" preload="auto"></audio>
+  <!-- Debug box (will show audio load/play status) -->
+  <div id="debug" aria-hidden="false">
+    <b>Debug status</b>
+    <div id="dbg-audio">Audio: checking…</div>
+    <div id="dbg-play">Play attempts: 0</div>
+    <div id="dbg-errors" style="margin-top:6px;color:#ffd2d2"></div>
+  </div>
 
 <script>
-/* ===========================
-      TYPEWRITER TEXT
-=========================== */
+/* ============================
+   Single-file working script
+   - typewriter triggered by button
+   - audio starts after button tap (required on iPad/Safari)
+   - debug info visible
+   - confetti + sparkles
+   ============================ */
+
 const TEXT = `Bhaiii tysm for guiding me and explaining things to me for hours like literally saving me every single time. And fr tg that you initiated that convo in the Live Insaan server varna hum aaj dost hi nahi hote ;-; (but aap catfish hote hote bach gaye 💀).
 
 Anyways ab toh we homies bro daily tea spilling aur aapko gossip karne mein majboor kar diya hai humne lol 😂.
@@ -46,86 +89,109 @@ Once Again Happiest birthday Garvitaa 🎀`;
 
 const target = document.getElementById('message');
 let idx = 0;
+const TYPE_SPEED = 24;
 
-function typeStep() {
-    if (idx >= TEXT.length) return;
-    const ch = TEXT[idx++];
-    target.innerHTML += (ch === "\n" ? "<br>" : ch);
-
-    let extra = 0;
-    if (".!?".includes(ch)) extra = 140;
-    else if (",;".includes(ch)) extra = 50;
-
-    setTimeout(typeStep, 24 + extra);
+function typeStep(){
+  if(idx >= TEXT.length) return;
+  const ch = TEXT[idx++];
+  target.innerHTML += (ch === '\n' ? '<br>' : ch);
+  let extra = 0;
+  if (".!?".includes(ch)) extra = 140;
+  else if (",;".includes(ch)) extra = 50;
+  setTimeout(typeStep, TYPE_SPEED + extra);
 }
 
-/* ===========================
-      CONFETTI EFFECT
-=========================== */
-function spawnConfettiBurst(x, y, count = 18) {
-    for (let i = 0; i < count; i++) {
-        const el = document.createElement('div');
-        el.className = 'confetti';
-        const size = 6 + Math.random() * 10;
-        el.style.width = size + 'px';
-        el.style.height = (size * 0.6) + 'px';
-        el.style.left = (x + (Math.random() * 40 - 20)) + 'px';
-        el.style.top = (y + (Math.random() * 20 - 10)) + 'px';
-        el.style.background = randomColor();
-        el.style.transform = `rotate(${Math.random() * 360}deg)`;
-        document.body.appendChild(el);
-        setTimeout(() => el.remove(), 2200);
-    }
+/* confetti */
+function spawnConfettiBurst(x,y,count=18){
+  for(let i=0;i<count;i++){
+    const el = document.createElement('div');
+    el.className = 'confetti';
+    const size = 6 + Math.random()*10;
+    el.style.width = size+'px';
+    el.style.height = (size*0.6)+'px';
+    el.style.left = (x + (Math.random()*40-20)) + 'px';
+    el.style.top  = (y + (Math.random()*20-10)) + 'px';
+    el.style.background = confettiColor();
+    el.style.transform = `rotate(${Math.random()*360}deg)`;
+    document.body.appendChild(el);
+    setTimeout(()=> el.remove(), 2200);
+  }
+}
+function confettiColor(){
+  const palette = ['#FFB6C1','#FFD1A9','#C6E6FF','#EAD7FF','#B8F3D6'];
+  return palette[Math.floor(Math.random()*palette.length)];
 }
 
-function randomColor() {
-    const palette = ['#FFB6C1', '#FFD1A9', '#C6E6FF', '#EAD7FF', '#B8F3D6'];
-    return palette[Math.floor(Math.random() * palette.length)];
-}
-
-/* ===========================
-      SPARKLES ON POINTER MOVE
-=========================== */
-document.addEventListener('pointermove', (e) => {
-    if (Math.random() > 0.25) return;
-    const s = document.createElement('div');
-    s.className = 'spark';
-    s.style.left = (e.pageX + (Math.random() * 14 - 7)) + 'px';
-    s.style.top = (e.pageY + (Math.random() * 14 - 7)) + 'px';
-    document.body.appendChild(s);
-    setTimeout(() => s.remove(), 1400);
+/* sparkles */
+document.addEventListener('pointermove', (e)=>{
+  if(Math.random() > 0.25) return;
+  const s = document.createElement('div');
+  s.className = 'spark';
+  s.style.left = (e.pageX + (Math.random()*14-7)) + 'px';
+  s.style.top  = (e.pageY + (Math.random()*14-7)) + 'px';
+  document.body.appendChild(s);
+  setTimeout(()=> s.remove(), 1400);
 });
 
-/* ===========================
-          MUSIC BUTTON
-=========================== */
+/* audio + button */
 const musicBtn = document.getElementById('musicBtn');
 const bgm = document.getElementById('bgMusic');
 
+const dbgAudio = document.getElementById('dbg-audio');
+const dbgPlay = document.getElementById('dbg-play');
+const dbgErrors = document.getElementById('dbg-errors');
+
+let playAttempts = 0;
+
+function updateDebug(){
+  dbgAudio.textContent = `Audio src: ${bgm.src ? bgm.src.split('/').pop() : '(no src)' } — readyState=${bgm.readyState}`;
+  dbgPlay.textContent = `Play attempts: ${playAttempts}`;
+}
+
+bgm.addEventListener('canplaythrough', ()=> { updateDebug(); dbgAudio.textContent = dbgAudio.textContent + ' (canplaythrough)'; }, { once: true });
+bgm.addEventListener('loadeddata', ()=> updateDebug());
+bgm.addEventListener('error', (ev)=> {
+  dbgErrors.textContent = 'Audio load error — file missing or 404. Check music.mp3 exists and name is exact.';
+  updateDebug();
+});
+
 musicBtn.addEventListener('click', async () => {
+  playAttempts++;
+  updateDebug();
+  dbgErrors.textContent = '';
+  try {
+    await bgm.play();
+    bgm.loop = true;
+    bgm.volume = 0.82;
+    dbgAudio.textContent = dbgAudio.textContent + ' (playing)';
+  } catch(err){
+    dbgErrors.textContent = 'Play blocked by browser or file issue — check debug console.';
+    console.warn('Audio play error:', err);
+  }
 
-    try {
-        await bgm.play();
-        bgm.loop = true;
-        bgm.volume = 0.85;
-    } catch(e) {}
+  // start typewriter (only once)
+  if(idx === 0){
+    setTimeout(typeStep, 300);
+  }
 
-    // start typewriter
-    if (idx === 0) setTimeout(typeStep, 300);
+  // confetti burst
+  const r = musicBtn.getBoundingClientRect();
+  spawnConfettiBurst(r.left + r.width/2, r.top + r.height/2, 22);
 
-    // confetti burst on button
-    const rect = musicBtn.getBoundingClientRect();
-    spawnConfettiBurst(rect.left + rect.width / 2, rect.top + rect.height / 2, 22);
+  // button UI
+  musicBtn.disabled = true;
+  musicBtn.textContent = '🎵 Playing...';
+  musicBtn.classList.add('played');
 
-    musicBtn.disabled = true;
-    musicBtn.textContent = "🎵 Playing...";
-    musicBtn.classList.add("played");
+  updateDebug();
 });
 
-// confetti on double-tap anywhere
-document.addEventListener('dblclick', (e) => {
-    spawnConfettiBurst(e.pageX, e.pageY, 28);
-});
+/* helpful console messages for developer */
+console.info('Card loaded. Ensure music.mp3 exists in same folder (case-sensitive).');
+updateDebug();
+
+/* also allow double-tap confetti */
+document.addEventListener('dblclick', (e)=> spawnConfettiBurst(e.pageX, e.pageY, 28));
 </script>
 
 </body>
