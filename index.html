@@ -1,0 +1,120 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Happy Birthday — Garv</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="card" role="main" aria-labelledby="title">
+    <h1 id="title" class="title">🎉 Happy Birthday Garv! 🎉</h1>
+
+    <div id="message" class="typing" aria-live="polite"></div>
+
+    <div class="controls">
+      <button id="playBtn" class="btn" aria-label="Play music and reveal">💗 Play Music & Open</button>
+    </div>
+
+    <div class="note">— with lots of kasht taken by your homie</div>
+  </main>
+
+  <!-- audio file: upload music.mp3 to repo root -->
+  <audio id="bgMusic" src="music.mp3" preload="auto"></audio>
+
+  <script>
+  /* ---------- CONFIG ---------- */
+  const TEXT = `Bhaiii tysm for guiding me and explaining things to me for hours like literally saving me every single time. And fr tg that you initiated that convo in the Live Insaan server varna hum aaj dost hi nahi hote ;-; (but aap catfish hote hote bach gaye 💀).
+
+Anyways ab toh we homies bro daily tea spilling aur aapko gossip karne mein majboor kar diya hai humne lol 😂.
+
+You’re genuinely an amazing and nice guy, sabka aur mera acha sochne ke liye dhanyawaad! Just be that way always… bas thoda gym shym jao aur body banao kya pata koi aapko ched de toh Cynthia poch nahi payegi 💔💀.
+
+Lwky love your music taste ekdum slayyy (95% match 🥹) and your crazy humor 💀.
+
+Waise Sorry but I drag you into all my kands because bro… ab toh you are the fire brigade aka Taarak Mehta 😭🙏 and main obviously Jethiya 😃 (ik ye line sachme ajeeb thi).
+
+God bless you Bhauu! Enjoy your special day.
+
+And all the bestest for tmrw's physics paper AAG LAGA DENAAA 🔥
+
+Once Again Happiest birthday Garvitaa 🎀`;
+  const TYPE_SPEED = 24; // ms per character (base)
+
+  /* ---------- TYPEWRITER ---------- */
+  const target = document.getElementById('message');
+  let idx = 0;
+  function typeStep(){
+    if(idx >= TEXT.length) {
+      target.classList.add('done');
+      return;
+    }
+    const ch = TEXT[idx++];
+    target.innerHTML += (ch === '\n' ? '<br>' : ch);
+    let extra = 0;
+    if (".!?".includes(ch)) extra = 140;
+    else if (",;".includes(ch)) extra = 50;
+    setTimeout(typeStep, TYPE_SPEED + extra);
+  }
+
+  /* ---------- CONFETTI / PARTICLES ---------- */
+  function spawnConfettiBurst(x, y, count = 18){
+    for(let i=0;i<count;i++){
+      const el = document.createElement('div');
+      el.className = 'confetti';
+      const size = 6 + Math.random()*10;
+      el.style.width = size+'px';
+      el.style.height = (size*0.6)+'px';
+      el.style.left = (x + (Math.random()*40-20)) + 'px';
+      el.style.top  = (y + (Math.random()*20-10)) + 'px';
+      el.style.background = confettiColor();
+      el.style.transform = `rotate(${Math.random()*360}deg)`;
+      document.body.appendChild(el);
+      // animate with CSS (will fade out)
+      setTimeout(()=> el.remove(), 2200);
+    }
+  }
+  function confettiColor(){
+    const palette = ['#FFB6C1','#FFD1A9','#C6E6FF','#EAD7FF','#B8F3D6'];
+    return palette[Math.floor(Math.random()*palette.length)];
+  }
+
+  // gentle drifting sparkles following pointer (light)
+  document.addEventListener('pointermove', (e)=>{
+    if(Math.random() > 0.25) return;
+    const s = document.createElement('div');
+    s.className = 'spark';
+    s.style.left = (e.pageX + (Math.random()*14-7)) + 'px';
+    s.style.top  = (e.pageY + (Math.random()*14-7)) + 'px';
+    document.body.appendChild(s);
+    setTimeout(()=> s.remove(), 1400);
+  });
+
+  /* ---------- MUSIC BUTTON ---------- */
+  const playBtn = document.getElementById('playBtn');
+  const bgm = document.getElementById('bgMusic');
+
+  playBtn.addEventListener('click', async () => {
+    // attempt to play music (gesture required on iOS/Android)
+    try { await bgm.play(); bgm.loop = true; bgm.volume = 0.8; } catch(e){ /* ignore */ }
+
+    // start typewriter if not started
+    if(idx === 0) {
+      setTimeout(typeStep, 300);
+    }
+
+    // subtle confetti burst near button
+    const rect = playBtn.getBoundingClientRect();
+    spawnConfettiBurst(rect.left + rect.width/2, rect.top + rect.height/2, 22);
+
+    // visual feedback
+    playBtn.disabled = true;
+    playBtn.textContent = 'Enjoy 🎉';
+    playBtn.classList.add('played');
+  });
+
+  // allow retrigger confetti on double-click anywhere
+  document.addEventListener('dblclick', (e)=> spawnConfettiBurst(e.pageX, e.pageY, 28));
+  </script>
+</body>
+</html>
