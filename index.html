@@ -117,5 +117,15 @@ Once Again Happiest birthday Garvitaa 🎀`;
   // allow retrigger confetti on double-click anywhere
   document.addEventListener('dblclick', (e)=> spawnConfettiBurst(e.pageX, e.pageY, 28));
   </script>
+      <script>
+const btn = document.getElementById('musicBtn');
+const music = document.getElementById('bgMusic');
+
+btn.addEventListener('click', () => {
+    music.play().catch(()=>{});
+    btn.textContent = "🎵 Playing...";
+});
+</script>
+
 </body>
 </html>
